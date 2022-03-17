@@ -70,3 +70,6 @@ logs/
 *.csv
 *.log
 *.pfx
+
+data/
+.idea/

@@ -1,0 +1,36 @@
+version: '3.3'
+services:
+  shioajicaller:
+    image: sdpower/shioaji_caller
+    container_name: shioaji-caller
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "${SHIOAJI_PORT:-6789}:6789"
+    volumes:
+      - .env:/src/.env
+      - ./data/shioajicaller/Futures.csv:/src/Futures.csv
+      - ./data/shioajicaller/Options.csv:/src/Options.csv
+      - ./data/shioajicaller/StockTWSE.csv:/src/StockTWSE.csv
+    env_file: .env
+    working_dir: /src
+    command: main.py websockets -wr -ps 250
+    networks:
+      - app-network
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: unless-stopped
+    volumes:
+      - ./data/redis:/data
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
